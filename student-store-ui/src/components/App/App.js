@@ -33,14 +33,14 @@ export default function App() {
 
   const handleOnCheckout = async () => {
     setIsCheckingOut(true)
-
+    console.log("cart", cart);
     const {data,error} = await apiClient.createOrder({order: cart});
     if (error) {
       const message = error?.response?.data?.error?.message
       setError(message ?? String(error))
     }
     if(data) {
-      setOrders((o) => [...data.order, ...o]);
+      setOrders((o) => [data.order, ...o]);
       setCart({});
       return data
     }

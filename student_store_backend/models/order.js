@@ -22,7 +22,9 @@ class Order {
     static async createOrder({order, user}) {
         //takes user's order and stores it in database
         let user_id = await db.query(`SELECT id FROM users WHERE email = $1`, [user.email]);
-        user_id = user_id.rows[0];
+        console.log("user_id", user_id)
+        user_id = user_id.rows[0].id;
+        console.log("user_id", user_id)
         const query = `INSERT INTO orders (
             customer_id
         )
@@ -30,12 +32,26 @@ class Order {
         RETURNING id;
     `
     let orderId = await db.query(query, [user_id]);
-    orderId = orderId.rows[0]
-    order.forEach((product) => {
-        /*order_id    INTEGER NOT NULL,
-  product_id  INTEGER NOT NULL,
-  quantity    INTEGER NOT NULL DEFAULT 1,
-  discount    INTEGER NOT NULL */
+    
+    orderId = orderId.rows[0].id
+    console.log("orderId", orderId);
+    for (const [key, value] of Object.entries(order)) {
+        console.log(`${key}: ${value}`);
+        const query = `INSERT INTO order_details (
+            order_id,
+            product_id,
+            quantity,
+            discount
+        )
+        VALUES ($1, $2, $3, $4)
+        RETURNING order_id;
+        `;
+        db.query(query, [orderId, key, value, 0])
+    }
+    return order;
+
+    /*order.forEach((product) => {
+
         const query = `INSERT INTO order_details (
             order_id,
             product_id,
@@ -46,7 +62,8 @@ class Order {
         RETURNING order_id;
         `;
         db.query(query, [orderId, product.id, product.quantity, product.discount])
-    })
+    })*/
+
     }
 }
 

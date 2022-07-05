@@ -45,7 +45,7 @@ class ApiClient {
         return await this.request({endpoint: `auth/register`, method: `POST`, data: credentials});
     }
 
-    async createOrder(order) {
+    async createOrder({order}) {
         return await this.request({endpoint: `order/`, method: `POST`, data: order});
     }
 

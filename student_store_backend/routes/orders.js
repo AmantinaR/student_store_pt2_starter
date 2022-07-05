@@ -17,6 +17,7 @@ router.post('/', security.requireAuthenticatedUser, async (req, res, next) => {
     try {
         const user = res.locals.user;
         const req_order = req.body.order
+        console.log("req_order", req_order);
         const params = {order: req_order, user: user}
         const order = await Order.createOrder(params);
         return res.status(200).json({ order });
