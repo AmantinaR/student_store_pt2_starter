@@ -30,11 +30,11 @@ class User {
       }
     }
 
-    throw new UnauthorizedError("Invalid username/password")
+    throw new UnauthorizedError("Invalid email/password")
   }
 
   static async register(credentials) {
-    const requiredFields = ["email", "password", "username", "isAdmin", "name"]
+    const requiredFields = ["email", "password", "isAdmin", "name", "username"]
     requiredFields.forEach((property) => {
       if (!credentials.hasOwnProperty(property)) {
         throw new BadRequestError(`Missing ${property} in request body.`)
@@ -59,11 +59,11 @@ class User {
     const normalizedEmail = credentials.email.toLowerCase()
 
     const userResult = await db.query(
-      `INSERT INTO users (email, password, username, is_admin, name)
+      `INSERT INTO users (email, password, is_admin, name, username)
        VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, email, username, is_admin, created_at, name;
+       RETURNING id, email, is_admin, created_at, name;
       `,
-      [normalizedEmail, hashedPassword, credentials.username, credentials.isAdmin, credentials.name]
+      [normalizedEmail, hashedPassword, credentials.isAdmin, credentials.name, credentials.username]
     )
     const user = userResult.rows[0]
 

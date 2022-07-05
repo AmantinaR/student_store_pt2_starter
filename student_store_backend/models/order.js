@@ -21,14 +21,16 @@ class Order {
     }
     static async createOrder({order, user}) {
         //takes user's order and stores it in database
-        const user_id = await db.query(`SELECT id FROM users WHERE email = $1`, [user.email])
+        let user_id = await db.query(`SELECT id FROM users WHERE email = $1`, [user.email]);
+        user_id = user_id.rows[0];
         const query = `INSERT INTO orders (
             customer_id
         )
         VALUES ($1)
         RETURNING id;
     `
-    const orderId = await db.query(query, [user_id]);
+    let orderId = await db.query(query, [user_id]);
+    orderId = orderId.rows[0]
     order.forEach((product) => {
         /*order_id    INTEGER NOT NULL,
   product_id  INTEGER NOT NULL,

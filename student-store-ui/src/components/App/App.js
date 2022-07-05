@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import axios from "axios"
+import apiClient from "../../services/apiClient"
 import Home from "../Home/Home"
 import Signup from "../Signup/Signup"
 import Login from "../Login/Login"
@@ -33,7 +34,18 @@ export default function App() {
   const handleOnCheckout = async () => {
     setIsCheckingOut(true)
 
-    try {
+    const {data,error} = await apiClient.createOrder({order: cart});
+    if (error) {
+      const message = error?.response?.data?.error?.message
+      setError(message ?? String(error))
+    }
+    if(data) {
+      setOrders((o) => [...data.order, ...o]);
+      setCart({});
+      return data
+    }
+    setIsCheckingOut(false)
+    /*try {
       const res = await axios.post("http://localhost:3001/orders", { order: cart })
       if (res?.data?.order) {
         setOrders((o) => [...res.data.order, ...o])
@@ -49,14 +61,22 @@ export default function App() {
       setError(message ?? String(err))
     } finally {
       setIsCheckingOut(false)
-    }
+    }*/
   }
 
   useEffect(() => {
     const fetchProducts = async () => {
       setIsFetching(true)
-
-      try {
+      const {data, error} = await apiClient.fetchProducts();
+      if(error){
+        const message = error?.response?.data?.error?.message
+        setError(message ?? String(error))
+      }
+      if(data) {
+        setProducts(data.products)
+      }
+      setIsFetching(false)
+      /*try {
         const res = await axios.get("http://localhost:3001/store")
         if (res?.data?.products) {
           setProducts(res.data.products)
@@ -69,11 +89,31 @@ export default function App() {
         setError(message ?? String(err))
       } finally {
         setIsFetching(false)
-      }
+      }*/
     }
 
     fetchProducts()
   }, [])
+
+  useEffect(() => {
+    const fetchAuthedUser = async () => {
+      const {data, error} = await apiClient.fetchUserFromToken()
+      if (data) setUser(data.user)
+      if (error) setError(error)
+    }
+
+    const token = localStorage.getItem("student_store_token");
+    if (token) {
+      apiClient.setToken(token);
+      fetchAuthedUser();
+    }
+  }, [])
+
+  const handleLogout = async () => {
+    await apiClient.logoutUser()
+    setUser({});
+    setError(null);
+  }
 
   return (
     <div className="App">
@@ -94,6 +134,7 @@ export default function App() {
                 addToCart={handleOnAddToCart}
                 removeFromCart={handleOnRemoveFromCart}
                 getQuantityOfItemInCart={handleGetItemQuantity}
+                handleLogout={handleLogout}
               />
             }
           />

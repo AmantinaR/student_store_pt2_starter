@@ -18,7 +18,7 @@ VALUES ('Rice Krispies',
   299
 ), ('Coconut Water',
   'food',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/ONE_Pure_Coconut_Water.jpeg/900px-ONE_Pure_Coconut_Water.jpeg',
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Coconut_Drink%2C_Pangandaran.JPG/220px-Coconut_Drink%2C_Pangandaran.JPG',
   'Somehow incredibly hydrating, while also not really being water.',
   325  
 ), ('Fruit Medley',

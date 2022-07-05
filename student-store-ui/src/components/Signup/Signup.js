@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import axios from "axios"
+import apiClient from "../../services/apiClient"
 import "./Signup.css"
 
 export default function Signup({ user, setUser }) {
@@ -10,6 +11,7 @@ export default function Signup({ user, setUser }) {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    username: "",
     password: "",
     passwordConfirm: "",
   })
@@ -54,7 +56,15 @@ export default function Signup({ user, setUser }) {
       setErrors((e) => ({ ...e, passwordConfirm: null }))
     }
 
-    try {
+    const {data, error} = await apiClient.signupUser({email: form.email, name: form.name, password: form.password, username: form.username})
+    if (error) setErrors((e) => ({ ...e, form: error }));
+    if(data?.user) {
+      setUser(data.user)
+      apiClient.setToken(data.token)
+    }
+    setIsProcessing(false);
+
+    /*try {
       const res = await axios.post("http://localhost:3001/auth/register", {
         name: form.name,
         email: form.email,
@@ -71,7 +81,7 @@ export default function Signup({ user, setUser }) {
       setErrors((e) => ({ ...e, form: message ?? String(err) }))
     } finally {
       setIsProcessing(false)
-    }
+    }*/
   }
 
   return (
@@ -90,6 +100,17 @@ export default function Signup({ user, setUser }) {
               name="name"
               placeholder="Enter your full name"
               value={form.name}
+              onChange={handleOnInputChange}
+            />
+            {errors.name && <span className="error">{errors.name}</span>}
+          </div>
+          <div className="input-field">
+            <label htmlFor="name">UserName</label>
+            <input
+              type="text"
+              name="username"
+              placeholder="Enter your full name"
+              value={form.username}
               onChange={handleOnInputChange}
             />
             {errors.name && <span className="error">{errors.name}</span>}

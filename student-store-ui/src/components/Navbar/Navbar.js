@@ -3,9 +3,11 @@ import logo from "../../assets/codepath.svg"
 import Twitter from "../Icons/Twitter"
 import Instagram from "../Icons/Instagram"
 import Facebook from "../Icons/Facebook"
+import apiClient from "../../services/apiClient"
 import "./Navbar.css"
 
-export default function Navbar() {
+export default function Navbar({}) {
+
   return (
     <nav className="Navbar">
       <div className="content">
